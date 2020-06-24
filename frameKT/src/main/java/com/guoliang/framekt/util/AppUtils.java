@@ -1,4 +1,4 @@
-package com.guoliang.frame.util;
+package com.guoliang.framekt.util;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -103,7 +103,7 @@ public class AppUtils {
 
                     context.getPackageName(), 0);
 
-            return (int) packageInfo.getLongVersionCode();
+            return (int) packageInfo.versionCode;
 
         } catch (Exception e) {
 

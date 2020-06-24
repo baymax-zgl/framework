@@ -16,13 +16,13 @@ import androidx.appcompat.app.AppCompatActivity;
  * @Author: zhangguoliang
  * @CreateTime: 2020/5/26 17:03
  */
-abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
     //布局id
-    abstract int getLayoutId();
+    public abstract int getLayoutId();
     //页面名称
-    abstract String getPageName();
+    public abstract String getPageName();
     //初始化
-    abstract void initView(Bundle savedInstanceState);
+    public abstract void initView(Bundle savedInstanceState);
 
     //是否展示状态栏
     public boolean showStatusBar=false;
