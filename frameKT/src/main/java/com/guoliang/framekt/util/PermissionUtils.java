@@ -12,7 +12,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.guoliang.frame.R;
+
+import com.guoliang.framekt.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;

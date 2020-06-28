@@ -7,9 +7,9 @@ import kotlinx.coroutines.launch
 
 /**
  * @Description:
- * @Author: BaseViewModel
+ * @Author: zhangguoliang
  * @CreateTime: 2020/6/24 17:26
  */
-class BaseViewModel : ViewModel() {
+open class BaseViewModel : ViewModel() {
     fun launch(block:suspend CoroutineScope.() -> Unit)=viewModelScope.launch { block() }
 }
