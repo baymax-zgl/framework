@@ -1,4 +1,4 @@
-package com.example.baseapplication;
+package com.example.framework;
 
 import android.view.View;
 

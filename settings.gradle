@@ -1,4 +1,4 @@
 include ':frameKT'
-rootProject.name='BaseApplication'
+rootProject.name='framework'
 include ':app'
 include ':frame'

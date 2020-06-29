@@ -1,10 +1,7 @@
-package com.example.baseapplication;
+package com.example.framework;
 
-import androidx.annotation.NonNull;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
-import androidx.databinding.Observable;
-import androidx.databinding.ObservableArrayMap;
 
 import com.guoliang.frame.util.LogUtil;
 

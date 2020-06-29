@@ -10,7 +10,7 @@
 
         <variable
             name="user"
-            type="com.example.baseapplication.User" />
+            type="com.example.framework.User" />
 
         <variable
             name="list"
@@ -18,7 +18,7 @@
 
         <variable
             name="presenter"
-            type="com.example.baseapplication.Presenter" />
+            type="com.example.framework.Presenter" />
     </data>
 
     <LinearLayout

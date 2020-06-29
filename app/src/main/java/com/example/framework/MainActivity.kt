@@ -1,9 +1,9 @@
-package com.example.baseapplication
+package com.example.framework
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
-import com.example.baseapplication.databinding.ActivityMainBinding
+import com.example.framework.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
