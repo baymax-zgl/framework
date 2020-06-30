@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MyToolbar">
+        <!--标题栏左边图片-->
+        <attr name="left_image" format="reference"/>
+        <!--标题栏文字-->
+        <attr name="app_title" format="string"/>
+        <!--标题栏右边图片-->
+        <attr name="right_image" format="reference"/>
+        <!--标题栏左边边距-->
+        <attr name="left_padding" format="dimension"/>
+        <!--标题栏右边文字-->
+        <attr name="right_title" format="string"/>
+        <!--标题栏左边文字-->
+        <attr name="left_title" format="string"/>
+        <!--标题栏右边文字颜色-->
+        <attr name="right_title_color" format="color"/>
+        <!--标题栏右边文字-->
+        <attr name="left_image_null" format="boolean"/>
+        <!--标题栏颜色-->
+        <attr name="app_bar_drawable" format="reference"/>
+        <!--标题栏颜色-->
+        <attr name="app_bar_color" format="color"/>
+        <!--标题栏文字颜色-->
+        <attr name="app_title_color" format="color"/>
+    </declare-styleable>
+    <!--自定义属性-->
+    <declare-styleable name="CommItemView">
+        <attr name="title_text" format="string"/>
+        <attr name="right_text" format="string"/>
+        <attr name="right_icon" format="reference"/>
+        <attr name="icon" format="reference"/>
+        <attr name="show_rule" format="boolean"/>
+    </declare-styleable>
+</resources>
