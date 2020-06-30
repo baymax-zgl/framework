@@ -22,8 +22,8 @@ abstract class BaseVMActivity<VM : ViewModel,DB : ViewDataBinding>(
 
     private val _useBinding = useDataBinding
     private val _hideStatusBar = hideStatusBar
-    private lateinit var mBinding: DB
-    private lateinit var mViewModel: VM
+    lateinit var mBinding: DB
+    lateinit var mViewModel: VM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
