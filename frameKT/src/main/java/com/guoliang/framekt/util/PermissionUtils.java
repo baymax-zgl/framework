@@ -1,6 +1,7 @@
 package com.guoliang.framekt.util;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -52,7 +53,7 @@ public class PermissionUtils {
      * @param permissions 多个权限
      * @return
      */
-    public boolean checkPermission(Activity activity, String... permissions) {
+    public boolean checkPermission(Context activity, String... permissions) {
         List<String> permissionsList = new ArrayList<>();
         for (String permission : permissions) {
             if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {

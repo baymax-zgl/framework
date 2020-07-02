@@ -31,7 +31,6 @@ abstract class BaseVMActivity<VM : ViewModel,DB : ViewDataBinding>(
             mViewModel = initVM!!
         }
 
-        startObserve()
         if (_useBinding) {
             mBinding = DataBindingUtil.setContentView(this, layoutId)
             mBinding.lifecycleOwner = this
@@ -51,9 +50,10 @@ abstract class BaseVMActivity<VM : ViewModel,DB : ViewDataBinding>(
                 window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             }
         }
-
-        initView()
-        initData()
+        startObserve()
+        initView(savedInstanceState)
+        initData(savedInstanceState)
+        ActivityManager.instance?.addActivity(this)
     }
     override fun finish() {
         super.finish()
@@ -61,8 +61,8 @@ abstract class BaseVMActivity<VM : ViewModel,DB : ViewDataBinding>(
     }
     abstract val layoutId: Int
     abstract val initVM: VM?
-    abstract fun initView()
-    abstract fun initData()
+    abstract fun initView(savedInstanceState: Bundle?)
+    abstract fun initData(savedInstanceState: Bundle?)
     abstract fun startObserve()
 
 }

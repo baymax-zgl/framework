@@ -44,6 +44,7 @@ public class MyToolbar extends AppBarLayout {
         String left_string = a.getString(R.styleable.MyToolbar_left_title);
         String app_string = a.getString(R.styleable.MyToolbar_app_title);
         boolean left_image_null = a.getBoolean(R.styleable.MyToolbar_left_image_null, false);
+        float right_padding = a.getDimension(R.styleable.MyToolbar_right_padding,left_image.getPaddingLeft());
         Drawable left_draw = a.getDrawable(R.styleable.MyToolbar_left_image);
         Drawable right_draw = a.getDrawable(R.styleable.MyToolbar_right_image);
         float left_padding = a.getDimension(R.styleable.MyToolbar_left_padding,left_image.getPaddingLeft());
@@ -68,6 +69,10 @@ public class MyToolbar extends AppBarLayout {
         } else {
             left_image.setPadding((int) left_padding,0,0,0);
             left_image.setImageDrawable(left_draw);
+        }
+        if (right_draw != null) {
+            right_image.setPadding(0,0,(int) right_padding,0);
+            right_image.setImageDrawable(right_draw);
         }
         left_image.setOnClickListener(new View.OnClickListener() {
             @Override

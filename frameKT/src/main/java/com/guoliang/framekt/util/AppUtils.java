@@ -1,5 +1,6 @@
 package com.guoliang.framekt.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -7,6 +8,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.provider.Settings;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @Description:
@@ -203,4 +208,13 @@ public class AppUtils {
 
     }
 
+    /**
+     * 获取手机IMEI号
+     *
+     * 需要动态权限: android.permission.READ_PHONE_STATE
+     */
+    @SuppressLint("HardwareIds")
+    public static String getIMEI(@NotNull Context context) {
+        return Settings.Secure.getString(context.getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
 }

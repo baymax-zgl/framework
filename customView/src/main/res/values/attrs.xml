@@ -9,6 +9,8 @@
         <attr name="right_image" format="reference"/>
         <!--标题栏左边边距-->
         <attr name="left_padding" format="dimension"/>
+        <!--标题栏右边边距-->
+        <attr name="right_padding" format="dimension"/>
         <!--标题栏右边文字-->
         <attr name="right_title" format="string"/>
         <!--标题栏左边文字-->

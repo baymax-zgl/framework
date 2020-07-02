@@ -12,19 +12,19 @@ import java.util.regex.Pattern;
  */
 public class VerifyUtil {
 
-    /**
-     * VerifyUtil实例
-     */
-    private static VerifyUtil INSTANCE;
-
-    public static VerifyUtil getInstance() {
-        if (INSTANCE == null) {
-            synchronized (VerifyUtil.class) {
-                INSTANCE = new VerifyUtil();
-            }
-        }
-        return INSTANCE;
-    }
+//    /**
+//     * VerifyUtil实例
+//     */
+//    private static VerifyUtil INSTANCE;
+//
+//    public static VerifyUtil getInstance() {
+//        if (INSTANCE == null) {
+//            synchronized (VerifyUtil.class) {
+//                INSTANCE = new VerifyUtil();
+//            }
+//        }
+//        return INSTANCE;
+//    }
 
     /**
      * 验证用户姓名且字符长度为1~50也就是2~25个汉字
