@@ -145,8 +145,9 @@ public class PermissionUtils {
 
     private OnPermissionsListener onPermissionsListener;
 
-    public void setOnPermissionsListener(OnPermissionsListener onPermissionsListener) {
+    public PermissionUtils setOnPermissionsListener(OnPermissionsListener onPermissionsListener) {
         this.onPermissionsListener = onPermissionsListener;
+        return this;
     }
 
     public interface OnPermissionsListener {

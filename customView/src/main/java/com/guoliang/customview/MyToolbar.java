@@ -114,6 +114,11 @@ public class MyToolbar extends AppBarLayout {
         app_title.setText(text);
     }
 
+    public void setRight_title(String text) {
+        right_text.setText(text);
+        right_text.setVisibility(View.VISIBLE);
+    }
+
     public interface OnBackClickListener {
         void setOnBackClickListener();
     }

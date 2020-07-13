@@ -62,7 +62,7 @@ abstract class BaseVMActivity<VM : ViewModel,DB : ViewDataBinding>(
     abstract val layoutId: Int
     abstract val initVM: VM?
     abstract fun initView(savedInstanceState: Bundle?)
-    abstract fun initData(savedInstanceState: Bundle?)
-    abstract fun startObserve()
+    open fun initData(savedInstanceState: Bundle?){}
+    open fun startObserve(){}
 
 }

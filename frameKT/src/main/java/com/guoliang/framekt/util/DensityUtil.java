@@ -10,39 +10,24 @@ import android.util.TypedValue;
  * @CreateTime: 2020/5/26 18:08
  */
 public class DensityUtil {
-    private DensityUtil() { }
 
-    /**
-     * DensityUtil实例
-     */
-    private static DensityUtil INSTANCE;
+    private static Resources sResources=Resources.getSystem();
 
-    public static DensityUtil getInstance(){
-        if (INSTANCE==null){
-            synchronized (DensityUtil.class){
-                INSTANCE = new DensityUtil();
-            }
-        }
-        return INSTANCE;
-    }
-
-    private Resources sResources=Resources.getSystem();
-
-    private float dip2px(float dp){
+    public static float dip2px(float dp){
         DisplayMetrics dm = sResources.getDisplayMetrics();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,dp,dm);
     }
 
-    private int dip2pxInt(float dp){
+    public static int dip2pxInt(float dp){
         return (int) dip2px(dp);
     }
 
-    private float sp2px(float sp){
+    public static float sp2px(float sp){
         DisplayMetrics dm = sResources.getDisplayMetrics();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,sp,dm);
     }
 
-    private int sp2pxInt(float sp){
+    public static int sp2pxInt(float sp){
         return (int) sp2px(sp);
     }
 
@@ -51,7 +36,7 @@ public class DensityUtil {
      * @param pxValue
      * @return
      */
-    private int px2dip(Float pxValue) {
+    public static int px2dip(Float pxValue) {
         float scale = sResources.getDisplayMetrics().density;
         return (int) (pxValue/scale+0.5f);
     }
@@ -61,7 +46,7 @@ public class DensityUtil {
      * @param pxValue
      * @return
      */
-    private int px2sp(Float pxValue) {
+    public static int px2sp(Float pxValue) {
         float fontScale = sResources.getDisplayMetrics().scaledDensity;
         return (int) (pxValue/fontScale+0.5f);
     }
