@@ -33,7 +33,7 @@ abstract class BaseVMFragment<VM : ViewModel,DB : ViewDataBinding>(useDataBindin
             mViewModel = initVM!!
         }
         if (_useBinding) mBinding.lifecycleOwner = this
-        initView()
+        initView(savedInstanceState)
         initData()
         startObserve()
         super.onViewCreated(view, savedInstanceState)
@@ -41,7 +41,7 @@ abstract class BaseVMFragment<VM : ViewModel,DB : ViewDataBinding>(useDataBindin
 
     abstract val layoutId: Int
     abstract val initVM: VM?
-    abstract fun initView()
-    abstract fun initData()
-    abstract fun startObserve()
+    abstract fun initView(savedInstanceState: Bundle?)
+    open fun initData(){}
+    open fun startObserve(){}
 }

@@ -32,10 +32,10 @@ abstract class BaseVMActivity<VM : ViewModel,DB : ViewDataBinding>(
         }
 
         if (_useBinding) {
-            mBinding = DataBindingUtil.setContentView(this, layoutId)
+            mBinding = DataBindingUtil.setContentView(this, layoutId!!)
             mBinding.lifecycleOwner = this
         } else {
-            setContentView(layoutId)
+            layoutId?.let { setContentView(it) }
         }
         if (_hideStatusBar) {
             // 5.0以上系统状态栏透明
@@ -59,7 +59,7 @@ abstract class BaseVMActivity<VM : ViewModel,DB : ViewDataBinding>(
         super.finish()
         ActivityManager.instance?.removeActivity(this)
     }
-    abstract val layoutId: Int
+    abstract val layoutId: Int?
     abstract val initVM: VM?
     abstract fun initView(savedInstanceState: Bundle?)
     open fun initData(savedInstanceState: Bundle?){}

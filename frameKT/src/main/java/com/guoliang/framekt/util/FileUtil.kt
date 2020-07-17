@@ -52,8 +52,8 @@ object FileUtil {
      */
     fun copyFile(oldPath: String, newPath: String, isRetain:Boolean=true): Boolean {
         return try {
-            var bytesum = 0
-            var byteread = 0
+            var byTeam = 0
+            var bantered = 0
             val oldFile = File(oldPath)
             //文件存在时
             if (oldFile.exists()) {
@@ -61,11 +61,10 @@ object FileUtil {
                 val inStream: InputStream = FileInputStream(oldPath)
                 val fs = FileOutputStream(newPath)
                 val buffer = ByteArray(1444)
-                var length: Int
-                while (inStream.read(buffer).also { byteread = it } != -1) {
-                    bytesum += byteread //字节数 文件大小
-                    println(bytesum)
-                    fs.write(buffer, 0, byteread)
+                while (inStream.read(buffer).also { bantered = it } != -1) {
+                    byTeam += bantered //字节数 文件大小
+                    println(byTeam)
+                    fs.write(buffer, 0, bantered)
                 }
                 inStream.close()
                 if (!isRetain) {
@@ -129,4 +128,6 @@ object FileUtil {
             false
         }
     }
+
+
 }
