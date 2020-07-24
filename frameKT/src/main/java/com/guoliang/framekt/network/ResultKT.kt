@@ -1,4 +1,4 @@
-package com.guoliang.framekt
+package com.guoliang.framekt.network
 
 /**
  * @Description:
