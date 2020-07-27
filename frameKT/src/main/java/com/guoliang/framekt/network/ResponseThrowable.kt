@@ -1,7 +1,5 @@
 package com.guoliang.framekt.network
 
-import com.guoliang.framekt.network.ERROR
-
 /**
  * @Description:
  * @Author: zhangguoliang
@@ -9,16 +7,16 @@ import com.guoliang.framekt.network.ERROR
  */
 class ResponseThrowable : Exception {
     var code: Int
-    var errMsg: String
+    var errMsgID: Int
 
     constructor(error: ERROR, e: Throwable? = null) : super(e) {
         code = error.getKey()
-        errMsg = error.getValue()
+        errMsgID = error.getValue()
     }
 
-    constructor(code: Int, msg: String, e: Throwable? = null) : super(e) {
+    constructor(code: Int, msgID: Int, e: Throwable? = null) : super(e) {
         this.code = code
-        this.errMsg = msg
+        this.errMsgID = msgID
     }
 }
 

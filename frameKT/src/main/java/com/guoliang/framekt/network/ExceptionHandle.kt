@@ -20,8 +20,8 @@ object ExceptionHandle {
         if (e is HttpException) {
             ex = ResponseThrowable(ERROR.HTTP_ERROR, e)
         } else if (e is JsonParseException
-            || e is JSONException
-            || e is ParseException || e is MalformedJsonException
+                || e is JSONException
+                || e is ParseException || e is MalformedJsonException
         ) {
             ex = ResponseThrowable(ERROR.PARSE_ERROR, e)
         } else if (e is ConnectException) {
@@ -30,13 +30,10 @@ object ExceptionHandle {
             ex = ResponseThrowable(ERROR.SSL_ERROR, e)
         } else if (e is java.net.SocketTimeoutException) {
             ex = ResponseThrowable(ERROR.TIMEOUT_ERROR, e)
-        } else if (e is java.net.UnknownHostException) {
-            ex = ResponseThrowable(ERROR.NETWORK_DISCONNECTION, e)
-        }else if (e is ConnectException ) {
+        } else if (e is ConnectException) {
             ex = ResponseThrowable(ERROR.TIMEOUT_ERROR, e)
         } else {
-            ex = if (!e.message.isNullOrEmpty()) ResponseThrowable(1000, e.message!!, e)
-            else ResponseThrowable(ERROR.UNKNOWN, e)
+            ex = ResponseThrowable(ERROR.UNKNOWN, e)
         }
         return ex
     }

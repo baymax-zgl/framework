@@ -8,7 +8,7 @@ package com.guoliang.framekt.network
 sealed class ResultKT<out T : Any> {
 
     data class Success<out T : Any>(val data: T) : ResultKT<T>()
-    data class Error(val exception: Exception) : ResultKT<Nothing>()
+    data class Error(val exception: Exception?,val message: String) : ResultKT<Nothing>()
 
     override fun toString(): String {
         return when (this) {

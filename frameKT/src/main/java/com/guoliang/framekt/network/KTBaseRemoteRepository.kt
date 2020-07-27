@@ -8,20 +8,23 @@ import java.lang.Exception
  * @CreateTime: 2020/7/24 10:04
  */
 open class KTBaseRemoteRepository {
+
     suspend fun <T :Any> safeApiCall(call: suspend () -> T):ResultKT<T> = try {
         ResultKT.Success(call.invoke())
     }catch (e :Exception){
-        ResultKT.Error(ExceptionHandle.handleException(e))
+        ResultKT.Error(e,e.message.toString())
     }
 
-    suspend fun <T :BaseApiEntity> safeApiCallFilterResults(call: suspend () -> T):ResultKT<T> = try {
+    open suspend fun <T : BaseApiEntity> safeApiCallFilterResults(call: suspend () -> T): ResultKT<T> = try {
         val data = call.invoke()
         if (data.code==10000){
-            ResultKT.Success(call.invoke())
+            ResultKT.Success(data)
         }else{
-            ResultKT.Error(Exception(data.message))
+            ResultKT.Error(null,data.message)
         }
-    }catch (e :Exception){
-        ResultKT.Error(ExceptionHandle.handleException(e))
+    }catch (e : Exception){
+        ResultKT.Error(e,e.message.toString())
     }
+
+
 }

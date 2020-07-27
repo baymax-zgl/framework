@@ -42,4 +42,7 @@
         <attr name="canLeftSwipe" format="boolean" />
         <attr name="fraction" format="float" />
     </declare-styleable>
+    <declare-styleable name="VideoPlayerView">
+        <attr name="is_control" format="boolean"/>
+    </declare-styleable>
 </resources>
