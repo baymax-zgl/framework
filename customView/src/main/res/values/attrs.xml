@@ -44,5 +44,7 @@
     </declare-styleable>
     <declare-styleable name="VideoPlayerView">
         <attr name="is_control" format="boolean"/>
+        <attr name="is_Title" format="boolean"/>
+        <attr name="control_follow_video" format="boolean"/>
     </declare-styleable>
 </resources>

@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -68,6 +69,9 @@ public class VideoPlayerView extends RelativeLayout {
     };
     private CheckBox cbVideoPlay;
     private TextureView videoTextureView;
+    private LinearLayout llTitleView;
+    private ImageView ivBack;
+    private TextView tvTitle;
     private ConstraintLayout clControl;
     private TextView tvAlterationTime;
     private SeekBar seekBarVideo;
@@ -77,6 +81,8 @@ public class VideoPlayerView extends RelativeLayout {
     private ViewGroup parentView;
     private String mVideoPath;
     private boolean is_control;
+    private boolean is_Title;
+    private boolean control_follow_video;
 
     public VideoPlayerView(@NonNull Context context) {
         this(context, null);
@@ -86,15 +92,20 @@ public class VideoPlayerView extends RelativeLayout {
         this(context, attrs, 0);
     }
 
-    public VideoPlayerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public VideoPlayerView(@NonNull final Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.VideoPlayerView);
         is_control = typedArray.getBoolean(R.styleable.VideoPlayerView_is_control, true);
+        is_Title = typedArray.getBoolean(R.styleable.VideoPlayerView_is_Title, true);
+        control_follow_video = typedArray.getBoolean(R.styleable.VideoPlayerView_control_follow_video, false);
         typedArray.recycle();
 
         View.inflate(context, R.layout.view_video_player, this);
         videoTextureView = findViewById(R.id.video_textureView);
+        llTitleView = findViewById(R.id.ll_title_view);
+        ivBack = findViewById(R.id.iv_back);
+        tvTitle = findViewById(R.id.tv_title);
         cbVideoPlay = findViewById(R.id.cb_video_play);
         clControl = findViewById(R.id.cl_control);
         tvAlterationTime = findViewById(R.id.tv_alteration_time);
@@ -103,6 +114,7 @@ public class VideoPlayerView extends RelativeLayout {
         ivZoom = findViewById(R.id.iv_zoom);
 
         clControl.setVisibility(is_control ? VISIBLE : INVISIBLE);
+        llTitleView.setVisibility(is_Title ? VISIBLE : INVISIBLE);
 
         videoTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
 
@@ -196,6 +208,15 @@ public class VideoPlayerView extends RelativeLayout {
                 }
             }
         });
+        ivBack.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!exitFullScreen()) {
+                    Activity activity = (Activity) context;
+                    activity.finish();
+                }
+            }
+        });
     }
 
     public void isVideoPlay(boolean isPlay) {
@@ -241,6 +262,8 @@ public class VideoPlayerView extends RelativeLayout {
             });
             mediaPlayer.setLooping(true);
             mediaPlayer.prepareAsync();
+
+            tvTitle.setText(videoPath.substring(videoPath.lastIndexOf("/") + 1));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -268,12 +291,14 @@ public class VideoPlayerView extends RelativeLayout {
             public void run() {
                 refreshTextureView();
                 setBackgroundColor(Color.parseColor("#000000"));
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) clControl.getLayoutParams();
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
-                //播放器控制器大小变化
-                clControl.setLayoutParams(layoutParams);
+                if (control_follow_video) {
+                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) clControl.getLayoutParams();
+                    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+                    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
+                    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
+                    //播放器控制器大小变化
+                    clControl.setLayoutParams(layoutParams);
+                }
                 mPlayerState = PLAYER_FULL_SCREEN;
             }
         });
@@ -296,15 +321,17 @@ public class VideoPlayerView extends RelativeLayout {
                 public void run() {
                     refreshTextureView();
                     setBackgroundColor(Color.parseColor("#00000000"));
-                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) clControl.getLayoutParams();
-                    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0);
-                    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_START, 0);
-                    layoutParams.addRule(RelativeLayout.ALIGN_PARENT_END, 0);
-                    layoutParams.addRule(RelativeLayout.ALIGN_BOTTOM, videoTextureView.getId());
-                    layoutParams.addRule(RelativeLayout.ALIGN_START, videoTextureView.getId());
-                    layoutParams.addRule(RelativeLayout.ALIGN_END, videoTextureView.getId());
-                    //播放器控制器大小变化
-                    clControl.setLayoutParams(layoutParams);
+                    if (control_follow_video) {
+                        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) clControl.getLayoutParams();
+                        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0);
+                        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_START, 0);
+                        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_END, 0);
+                        layoutParams.addRule(RelativeLayout.ALIGN_BOTTOM, videoTextureView.getId());
+                        layoutParams.addRule(RelativeLayout.ALIGN_START, videoTextureView.getId());
+                        layoutParams.addRule(RelativeLayout.ALIGN_END, videoTextureView.getId());
+                        //播放器控制器大小变化
+                        clControl.setLayoutParams(layoutParams);
+                    }
                     mPlayerState = PLAYER_NORMAL;
                 }
             });

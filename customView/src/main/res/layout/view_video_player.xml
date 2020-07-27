@@ -1,85 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/video_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/video_container"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="true"
+    android:background="#000000">
 
-        <TextureView
-            android:id="@+id/video_textureView"
-            android:layout_width="400dp"
-            android:layout_height="300dp"
-            android:layout_centerInParent="true" />
+    <LinearLayout
+        android:id="@+id/ll_title_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
 
-        <CheckBox
-            android:id="@+id/cb_video_play"
+        <ImageView
+            android:id="@+id/iv_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@drawable/video_play_check"
-            android:button="@null"
-            android:checked="true" />
+            android:padding="10dp"
+            android:src="@mipmap/icon_fanhui" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_control"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_alignStart="@id/video_textureView"
-            android:layout_alignEnd="@id/video_textureView"
-            android:layout_alignBottom="@id/video_textureView"
-            android:background="#80000000">
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:layout_marginStart="10dp"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            android:layout_marginLeft="10dp" />
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_alteration_time"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginStart="10dp"
-                android:gravity="center"
-                android:text="00:00"
-                android:textColor="#CCCCCC"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+    <TextureView
+        android:id="@+id/video_textureView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
 
-            <SeekBar
-                android:id="@+id/seek_bar_video"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:maxHeight="3dp"
-                android:progressDrawable="@drawable/play_seek_bar_shape"
-                android:splitTrack="false"
-                android:thumb="@drawable/seek_bar_view"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/tv_fixation_time"
-                app:layout_constraintStart_toEndOf="@+id/tv_alteration_time"
-                app:layout_constraintTop_toTopOf="parent" />
+    <CheckBox
+        android:id="@+id/cb_video_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/video_play_check"
+        android:button="@null"
+        android:checked="true" />
 
-            <TextView
-                android:id="@+id/tv_fixation_time"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginEnd="10dp"
-                android:gravity="center"
-                android:text="00:00"
-                android:textColor="#CCCCCC"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/iv_zoom"
-                app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_control"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="#80000000"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
 
-            <ImageView
-                android:id="@+id/iv_zoom"
-                android:layout_width="35dp"
-                android:layout_height="0dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:scaleType="center"
-                android:src="@mipmap/icon_fangda"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/tv_alteration_time"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:text="00:00"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <SeekBar
+            android:id="@+id/seek_bar_video"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:maxHeight="3dp"
+            android:progressDrawable="@drawable/play_seek_bar_shape"
+            android:splitTrack="false"
+            android:thumb="@drawable/seek_bar_view"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tv_fixation_time"
+            app:layout_constraintStart_toEndOf="@+id/tv_alteration_time"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_fixation_time"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:gravity="center"
+            android:text="00:00"
+            android:textColor="#CCCCCC"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_zoom"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_zoom"
+            android:layout_width="35dp"
+            android:layout_height="0dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:src="@mipmap/icon_fangda"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </RelativeLayout>
