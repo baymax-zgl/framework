@@ -30,6 +30,7 @@ abstract class BaseVMDialog<VM : ViewModel,DB : ViewDataBinding> : Dialog,
         }
         setContentView(mBinding.root)
         initView(savedInstanceState)
+        startObserve()
     }
 
     override fun show() {
