@@ -8,6 +8,12 @@
     android:animateLayoutChanges="true"
     android:background="#000000">
 
+    <TextureView
+        android:id="@+id/video_textureView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
     <LinearLayout
         android:id="@+id/ll_title_view"
         android:layout_width="match_parent"
@@ -38,11 +44,6 @@
             android:layout_marginLeft="10dp" />
     </LinearLayout>
 
-    <TextureView
-        android:id="@+id/video_textureView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true" />
 
     <CheckBox
         android:id="@+id/cb_video_play"

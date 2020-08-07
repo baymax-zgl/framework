@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.guoliang.framekt.R
+import com.guoliang.framekt.util.permission_observable.PermissionObserver
 import java.util.*
 
 /**
@@ -51,7 +52,7 @@ object PermissionUtils {
             }
         }
         if (permissionsList.isEmpty()) {
-            authorizationSuccess?.invoke()
+            permissionObserver?.authorizationSuccess()
         } else {
             ActivityCompat.requestPermissions(activity!!, permissionsList.toTypedArray(), REQUEST_CODE)
         }
@@ -66,8 +67,10 @@ object PermissionUtils {
      */
     fun onRequestPermissionsResult(activity: Activity, requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         val permissionMap: MutableMap<String, String> = HashMap()
+        val firstPermissionMap: MutableMap<String, Int> = HashMap()
         if (requestCode == REQUEST_CODE) {
             for (i in grantResults.indices) {
+                firstPermissionMap[permissions[i]]=grantResults[i]
                 //判断是否成功
                 if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                     //判断是否有禁止选项
@@ -80,15 +83,16 @@ object PermissionUtils {
             }
         }
         if (permissionMap.isEmpty()) {
-            authorizationSuccess?.invoke()
+            permissionObserver?.authorizationSuccess()
         } else {
             if (permissionMap.containsValue("forbid")) {
                 showPermissionDialog(activity)
             } else {
                 Toast.makeText(activity, activity.getString(R.string.please_permission), Toast.LENGTH_LONG).show()
             }
-            authorizationFailure?.invoke()
+            permissionObserver?.authorizationFailure()
         }
+        permissionObserver?.firstAuthorization(firstPermissionMap)
     }
 
     private fun showPermissionDialog(activity: Activity) {
@@ -101,15 +105,11 @@ object PermissionUtils {
                 }.setNegativeButton(R.string.cancel) { dialog, which -> dialog.cancel() }.create().show()
     }
 
-    //授权成功
-    private var authorizationSuccess:(()->Unit)?=null
-    //授权失败
-    private var authorizationFailure:(()->Unit)?=null
-    fun setOnPermissionsListener(authorizationSuccess:(()->Unit)?,authorizationFailure:(()->Unit)?): PermissionUtils {
-        this.authorizationSuccess=authorizationSuccess
-        this.authorizationFailure=authorizationFailure
+    private var permissionObserver: PermissionObserver?=null
+
+    fun setOnPermissionsListener(permissionObserver: PermissionObserver): PermissionUtils{
+       this.permissionObserver=permissionObserver
         return this
     }
-
 
 }
