@@ -356,9 +356,11 @@ public class VideoPlayerView extends RelativeLayout {
         if (isShowControlView) {
             cbVideoPlay.setVisibility(View.VISIBLE);
             clControl.setVisibility(is_control? View.VISIBLE: View.INVISIBLE);
+            llTitleView.setVisibility(is_control? View.VISIBLE: View.INVISIBLE);
         } else {
             cbVideoPlay.setVisibility(View.INVISIBLE);
             clControl.setVisibility(View.INVISIBLE);
+            llTitleView.setVisibility(View.INVISIBLE);
         }
         touchTime = 0;
     }
