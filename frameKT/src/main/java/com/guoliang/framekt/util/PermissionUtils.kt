@@ -6,13 +6,16 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.guoliang.framekt.R
 import com.guoliang.framekt.util.permission_observable.PermissionObserver
+import java.lang.ref.WeakReference
 import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * @Description: 权限管理工具类
@@ -20,7 +23,9 @@ import java.util.*
  * @CreateTime: 2020/5/27 10:19
  */
 object PermissionUtils {
-    private const val REQUEST_CODE = 100
+    private const val REQUEST_CODE = 123
+    private var isOpenPermission = false
+
     /**
      * 判断选权限
      *
@@ -28,10 +33,10 @@ object PermissionUtils {
      * @param permissions 多个权限
      * @return
      */
-    fun checkPermission(activity: Context?, vararg permissions: String): Boolean {
+    fun checkPermission(context: Context?, permissions: Array<String>): Boolean {
         val permissionsList: MutableList<String> = ArrayList()
         for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(activity!!, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(context!!, permission) != PackageManager.PERMISSION_GRANTED) {
                 permissionsList.add(permission)
             }
         }
@@ -52,9 +57,13 @@ object PermissionUtils {
             }
         }
         if (permissionsList.isEmpty()) {
-            permissionObserver?.authorizationSuccess()
+            permissionObserverMap[activity.toString()]?.authorizationSuccess()
         } else {
-            ActivityCompat.requestPermissions(activity!!, permissionsList.toTypedArray(), REQUEST_CODE)
+            if (!isOpenPermission) {
+                ActivityCompat.requestPermissions(activity!!, permissionsList.toTypedArray(), REQUEST_CODE)
+            } else {
+                permissionObserverMap[activity.toString()]?.authorizationFailure()
+            }
         }
     }
 
@@ -70,7 +79,7 @@ object PermissionUtils {
         val firstPermissionMap: MutableMap<String, Int> = HashMap()
         if (requestCode == REQUEST_CODE) {
             for (i in grantResults.indices) {
-                firstPermissionMap[permissions[i]]=grantResults[i]
+                firstPermissionMap[permissions[i]] = grantResults[i]
                 //判断是否成功
                 if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                     //判断是否有禁止选项
@@ -83,16 +92,19 @@ object PermissionUtils {
             }
         }
         if (permissionMap.isEmpty()) {
-            permissionObserver?.authorizationSuccess()
+            permissionObserverMap[activity.toString()]?.authorizationSuccess()
+            isOpenPermission = false
         } else {
             if (permissionMap.containsValue("forbid")) {
                 showPermissionDialog(activity)
             } else {
                 Toast.makeText(activity, activity.getString(R.string.please_permission), Toast.LENGTH_LONG).show()
+                permissionObserverMap[activity.toString()]?.authorizationFailure()
+                isOpenPermission = false
             }
-            permissionObserver?.authorizationFailure()
         }
-        permissionObserver?.firstAuthorization(firstPermissionMap)
+        permissionObserverMap[activity.toString()]?.firstAuthorization(firstPermissionMap)
+
     }
 
     private fun showPermissionDialog(activity: Activity) {
@@ -102,13 +114,37 @@ object PermissionUtils {
                     val packageURI = Uri.parse("package:" + activity.packageName)
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI)
                     activity.startActivity(intent)
-                }.setNegativeButton(R.string.cancel) { dialog, which -> dialog.cancel() }.create().show()
+                }.setNegativeButton(R.string.cancel) { dialog, which -> dialog.cancel() }
+                .setOnCancelListener {
+                    permissionObserverMap[activity.toString()]?.authorizationFailure()
+                    isOpenPermission = false
+                }.create().show()
     }
 
-    private var permissionObserver: PermissionObserver?=null
+    private val permissionObserverMap = HashMap<String, PermissionObserver>()
+    fun setOnPermissionsListener(activity: Activity, permissionObserver: PermissionObserver): PermissionUtils {
+        permissionObserverMap[activity.toString()] = permissionObserver
+        return this
+    }
 
-    fun setOnPermissionsListener(permissionObserver: PermissionObserver): PermissionUtils{
-       this.permissionObserver=permissionObserver
+    fun setOnPermissionsListener(activity: Activity, authorizationSuccess:(()->Unit)?=null,
+                                                         authorizationFailure:(()->Unit)?=null,
+                                                         firstAuthorization:((map: Map<String, Int>)->Unit)?=null
+    ):PermissionUtils{
+        val permissionObserver=object :PermissionObserver{
+            override fun authorizationSuccess() {
+                authorizationSuccess?.invoke()
+            }
+
+            override fun authorizationFailure() {
+                authorizationFailure?.invoke()
+            }
+
+            override fun firstAuthorization(map: Map<String, Int>) {
+                firstAuthorization?.invoke(map)
+            }
+        }
+        setOnPermissionsListener(activity,permissionObserver)
         return this
     }
 

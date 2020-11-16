@@ -58,7 +58,7 @@ public class VerifyUtil {
      * 联通：130、131、132、152、155、156、185、186 电信：133、153、180、189、（1349卫通） 147
      * 177 总结起来就是第一位必定为1，第二位必定为3或5或8，其他位置的可以为0-9
      */
-        String telRegex = "[1][34578]\\d{9}";// "[1]"代表第1位为数字1，"[358]"代表第二位可以为3、5、8中的一个，"\\d{9}"代表后面是可以是0～9的数字，有9位。
+        String telRegex = "[1][3456789]\\d{9}";// "[1]"代表第1位为数字1，"[358]"代表第二位可以为3、5、8中的一个，"\\d{9}"代表后面是可以是0～9的数字，有9位。
         if (TextUtils.isEmpty(mobiles)) return false;
         else
             return mobiles.matches(telRegex);
@@ -257,6 +257,26 @@ public class VerifyUtil {
     }
 
     /**
+     * 判断特殊字符
+     */
+    public static Boolean isSpecialChar(String str) {
+        String regex = "[ `~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\\n|\\r|\\t";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(str);
+        return match(regex, str);
+    }
+    /**
+     * 判断特殊字符
+     */
+    public static Boolean isSpecialChar(String str,String... filter) {
+        String regex = "[ `~!@#$%^&*()+=|{}':;',\\\\[\\\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\\n|\\r|\\t";
+        for (String s : filter) {
+            regex=regex.replace(s,"");
+        }
+        return match(regex, str);
+    }
+
+    /**
      * 验证输入密码长度 (6-20位除空格回车tab外的字符)
      */
     public static boolean isPasswordLength(String str) {
@@ -272,7 +292,7 @@ public class VerifyUtil {
     private static boolean match(String regex, String str) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(str);
-        return matcher.matches();
+        return matcher.find();
     }
 
     /**

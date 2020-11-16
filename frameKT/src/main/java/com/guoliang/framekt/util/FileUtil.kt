@@ -2,6 +2,7 @@ package com.guoliang.framekt.util
 
 import java.io.*
 import java.util.*
+import java.util.regex.Pattern
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
@@ -36,12 +37,142 @@ object FileUtil {
     fun fileRename(filePath: String, reName: String): Boolean {
         val file = File(filePath)
         val path =
-            filePath.substring(0, filePath.lastIndexOf("/") + 1) + reName + filePath.substring(
-                filePath.lastIndexOf("."),
-                filePath.length
-            )
+                filePath.substring(0, filePath.lastIndexOf("/") + 1) + reName + filePath.substring(
+                        filePath.lastIndexOf("."),
+                        filePath.length
+                )
         val newFile = File(path)
         return file.renameTo(newFile)
+    }
+
+    fun copyFile(oldPath: String,block:((String)->Unit)?=null): Boolean {
+        try {
+            var byTeam = 0
+            var bantered = 0
+            val oldFile = File(oldPath)
+            val newPath = getCopyNameFromOriginalTest(oldPath)
+            //文件存在时
+            if (oldFile.exists()) {
+                //读入原文件
+                val inStream: InputStream = FileInputStream(oldPath)
+                val fs = FileOutputStream(newPath)
+                val buffer = ByteArray(1444)
+                while (inStream.read(buffer).also { bantered = it } != -1) {
+                    byTeam += bantered //字节数 文件大小
+                    println(byTeam)
+                    fs.write(buffer, 0, bantered)
+                }
+                inStream.close()
+            }
+            block?.invoke(newPath)
+            return true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            LogUtil.e(TAG, e.message)
+            return false
+        }
+    }
+
+    /**
+     * @Description 得到文件副本名称，可供粘贴及多选重命名方法使用
+     * 命名规则为：普通文件后加“ 1”，若文件末尾已有“ 数字”，则数字递增。
+     * 比如，有个文件叫“我.jpg”，使用本方法后得到了“我 1.jpg”，再次使用本方法后得到“我 2.jpg”
+     * @param originalName 原本的名字，XXX.xx 或者完整路径 xx/xx/XXX.xx ， 也可以没有后缀.xx
+     * @return 副本名称
+     */
+    fun getCopyNameFromOriginal(originalName: String?): String? {
+        //1.判断阈值
+        if (originalName == null || originalName.isEmpty()) {
+            return null
+        }
+        var copyName: String? = null
+        //2.得到文件名和后缀名
+
+        val nameAndExt: List<String> = originalName.split(".")
+        val sb = StringBuilder()
+        nameAndExt.forEachIndexed { index, s ->
+            if (index != nameAndExt.size - 1) {
+                sb.append(s)
+            }
+        }
+        val fileName = sb.toString()
+        val fileExt = "." + nameAndExt[nameAndExt.size - 1]
+        //3.判断文件名是否包含我们定义副本规范的标记字符（空格）
+        if (fileName.contains(" ")) { //如果文件名包涵空格，进行判断是否已经为副本名称
+            //4-1.得到end
+            var array = fileName.split(" ".toRegex()).toTypedArray()
+            var end = array[array.size - 1] //得到标记字符后面的值
+            //4-2.确保end得到的是最后面的值（防止出现类似路径中的目录也有标记字符的情况，如："mnt/sda/wo de/zhao pian/我的 照片 1.png"）
+            while (end.contains(" ")) {
+                array = fileName.split(" ".toRegex()).toTypedArray()
+                end = array[array.size - 1]
+            }
+            //5.判断标记字符后的字符串是否复合规范（是否是数字）
+            val isDigit = end.matches(Regex("[0-9]+")) //用正则表达式判断是否是正整数
+            if (isDigit) {
+                try {
+                    val index = end.toInt() + 1 //递增副本记数
+                    val position = fileName.lastIndexOf(" ") //得到最后的空格的位置，用于截取前面的字符串
+                    if (position != -1) {
+                        //6-1.构造新的副本名（数字递增）
+                        copyName = fileName.substring(0, position + 1) + index.toString()
+                    }
+                } catch (e: java.lang.Exception) { //转化成整形错误
+                    e.printStackTrace()
+                    return null
+                }
+            } else { //如果空格后不是纯数字，即不为我们定义副本的规范
+                //6-2.构造新的副本名（数字初始为1）
+                copyName = "$fileName 1"
+            }
+        } else { //如果没有，则变为副本名称格式
+            //6-3.构造新的副本名（数字初始为1）
+            copyName = "$fileName 1"
+        }
+        LogUtil.e(TAG, "new copy name is $copyName$fileExt")
+        //6.返回副本名+后缀名
+        return copyName + fileExt
+    }
+
+    /**
+     * 重命名或复制规则
+     * originalName:源文件路径
+     * xxx(1)
+     * xxx(1)(1)
+     * xxx(1)(2)
+     * xxx(1)(2)(1)
+     * xxx(1)(2)(2)
+     * xxx(1)(2)(2)(1)
+     */
+    private fun getCopyNameFromOriginalTest(originalName: String): String {
+        val oldFile = File(originalName)
+        val oldFileName = oldFile.name
+        val nameAndExt: List<String> = oldFileName.split(".")
+        val sb = StringBuilder()
+        //防止名称有.符合
+        nameAndExt.forEachIndexed { index, s ->
+            if (index != nameAndExt.size - 1) {
+                sb.append(s)
+            }
+        }
+        var fileName = sb.toString()
+        val fileExt = "." + nameAndExt[nameAndExt.size - 1]
+        var newTimeFileName = "$fileName(1)$fileExt"
+        fileName=fileName.replace("(","\\(")
+        fileName=fileName.replace(")","\\)")
+        val oldRegex="$fileName[(][0-9]+[)]$fileExt"
+        val pattern = Pattern.compile(oldRegex)
+        val parentFile = oldFile.parentFile
+        var number = 1
+        parentFile!!.listFiles()?.forEach { it ->
+            val matcher = pattern.matcher(it.name)
+            if (matcher.find() && it.length() == oldFile.length()) {
+                val newNumber = it.name.substring(it.name.lastIndexOf("(") + 1, it.name.lastIndexOf(")")).toInt()
+                number = if (newNumber >= number) newNumber + 1 else number
+                newTimeFileName = it.name.substring(0, it.name.lastIndexOf("(") + 1) + number + it.name.substring(it.name.lastIndexOf(")"), it.name.length)
+            }
+        }
+        return parentFile.absolutePath + "/" + newTimeFileName
     }
 
     /**
@@ -50,7 +181,7 @@ object FileUtil {
      * @param newPath String 复制后路径 如：f:/fqf.txt
      * @return boolean 是否成功
      */
-    fun copyFile(oldPath: String, newPath: String, isRetain:Boolean=true): Boolean {
+    fun copyFile(oldPath: String, newPath: String, isRetain: Boolean = true): Boolean {
         return try {
             var byTeam = 0
             var bantered = 0
@@ -103,8 +234,8 @@ object FileUtil {
                 if (temp.isFile) {
                     val input = FileInputStream(temp)
                     val output = FileOutputStream(
-                        newPath + "/" +
-                                temp.name.toString()
+                            newPath + "/" +
+                                    temp.name.toString()
                     )
                     val b = ByteArray(1024 * 5)
                     var len: Int
@@ -117,8 +248,8 @@ object FileUtil {
                 }
                 if (temp.isDirectory) { //如果是子文件夹
                     copyFolder(
-                        oldPath + "/" + file[i],
-                        newPath + "/" + file[i]
+                            oldPath + "/" + file[i],
+                            newPath + "/" + file[i]
                     )
                 }
             }

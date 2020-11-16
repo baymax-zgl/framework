@@ -11,28 +11,21 @@ import java.util.*
  * @CreateTime: 2020/5/26 17:14
  */
 class ActivityManager private constructor() {
-    var stack: Stack<WeakReference<Activity>>? = null
+    private var stack: Stack<Activity> = Stack()
 
     /**
      * 获取栈顶Activity（堆栈中最后一个压入的）
      *
      * @return Activity
      */
-    val topActivity: Activity?
-        get() = if (stack != null) {
-            stack!!.lastElement().get()
-        } else {
-            null
-        }
+    val topActivity: Activity
+        get() = stack.lastElement()
 
     /**
      * 添加Activity到堆栈
      */
     fun addActivity(activity: Activity) {
-        if (stack == null) {
-            stack = Stack()
-        }
-        stack!!.add(WeakReference(activity))
+        stack.add(activity)
     }
 
     /**
@@ -41,9 +34,7 @@ class ActivityManager private constructor() {
      * @param activity 指定的Activity
      */
     fun removeActivity(activity: Activity) {
-        if (stack != null) {
-            stack!!.remove(WeakReference(activity))
-        }
+        stack.remove(activity)
     }
 
     /**
@@ -53,9 +44,9 @@ class ActivityManager private constructor() {
      * @return Activity
      */
     fun getActivityByClass(aClass: Class<*>): Activity? {
-        for (activityWeakReference in stack!!) {
-            if (activityWeakReference.get()!!.javaClass == aClass) {
-                return activityWeakReference.get()
+        for (activityWeakReference in stack) {
+            if (activityWeakReference.javaClass == aClass) {
+                return activityWeakReference
             }
         }
         return null
@@ -65,9 +56,7 @@ class ActivityManager private constructor() {
      * 结束栈顶Activity（堆栈中最后一个压入的）
      */
     fun killTopActivity() {
-        if (stack != null) {
-            killActivity(stack!!.lastElement().get())
-        }
+        killActivity(stack.lastElement())
     }
 
     /**
@@ -76,13 +65,11 @@ class ActivityManager private constructor() {
      * @param activity Activity
      */
     fun killActivity(activity: Activity?) {
-        if (stack != null) {
-            for (reference in stack!!) {
-                if (reference.get() === activity) {
-                    stack!!.remove(reference)
-                    if (activity != null && !reference.get()!!.isFinishing) {
-                        reference.get()!!.finish()
-                    }
+        for (reference in stack) {
+            if (reference === activity) {
+                stack.remove(reference)
+                if (activity != null && !reference!!.isFinishing) {
+                    reference.finish()
                 }
             }
         }
@@ -94,13 +81,11 @@ class ActivityManager private constructor() {
      * @param aClass Class
      */
     fun killActivity(aClass: Class<*>) {
-        if (stack != null) {
-            for (reference in stack!!) {
-                if (reference.get()!!.javaClass == aClass) {
-                    stack!!.remove(reference)
-                    if (!reference.get()!!.isFinishing) {
-                        reference.get()!!.finish()
-                    }
+        for (reference in stack) {
+            if (reference!!.javaClass == aClass) {
+                stack.remove(reference)
+                if (!reference.isFinishing) {
+                    reference.finish()
                 }
             }
         }
@@ -110,17 +95,14 @@ class ActivityManager private constructor() {
      * 结束所有Activity
      */
     fun killAllActivity() {
-        if (stack != null) {
-            val listIterator =
-                stack!!.listIterator()
-            while (listIterator.hasNext()) {
-                val activity = listIterator.next().get()
-                if (activity != null && !activity.isFinishing) {
-                    activity.finish()
-                    listIterator.remove()
-                }
+        val listIterator = stack.listIterator()
+        while (listIterator.hasNext()) {
+            val activity = listIterator.next()
+            if (activity != null && !activity.isFinishing) {
+                activity.finish()
             }
         }
+        stack.removeAllElements()
     }
 
     /**
@@ -129,16 +111,13 @@ class ActivityManager private constructor() {
      * @param aClass Class
      */
     fun killAllActivityExceptOne(aClass: Class<*>) {
-        if (stack != null) {
-            val listIterator =
-                stack!!.listIterator()
-            while (listIterator.hasNext()) {
-                if (listIterator.next().get()!!.javaClass == aClass) {
-                    continue
-                } else {
-                    killActivity(listIterator.next().get())
-                    listIterator.remove()
-                }
+        val listIterator = stack.listIterator()
+        while (listIterator.hasNext()) {
+            if (listIterator.next().javaClass == aClass) {
+                continue
+            } else {
+                killActivity(listIterator.next())
+                listIterator.remove()
             }
         }
     }
@@ -157,28 +136,12 @@ class ActivityManager private constructor() {
      * @return Activity的数
      */
     val stackActivitySize: Int
-        get() = if (stack != null) {
-            stack!!.size
-        } else {
-            0
-        }
+        get() = stack.size
 
     companion object {
-        /**
-         * ActivityManager实例
-         */
-        private var INSTANCE: ActivityManager? = null
-        val instance: ActivityManager?
-            get() {
-                if (INSTANCE == null) {
-                    synchronized(
-                        ActivityManager::class.java
-                    ) {
-                        INSTANCE =
-                            ActivityManager()
-                    }
-                }
-                return INSTANCE
-            }
+        val instance = ActivityManagerHolder.holder
+    }
+    private object ActivityManagerHolder {
+        val holder = ActivityManager()
     }
 }

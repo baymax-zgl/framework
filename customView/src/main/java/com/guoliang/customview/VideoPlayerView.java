@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -35,14 +34,13 @@ import java.io.IOException;
  * CreateDate: 2019/12/13 11:30
  * 视频播放器（带控制条）
  */
-public class VideoPlayerView extends RelativeLayout {
+public class VideoPlayerView extends RelativeLayout implements View.OnClickListener {
     private SurfaceTexture surfaceTexture;
     public MediaPlayer mediaPlayer;
 
     private final int PLAYER_NORMAL = 1; // 普通播放器
     private final int PLAYER_FULL_SCREEN = 2; // 全屏播放器
     private int mPlayerState = PLAYER_NORMAL;
-    private boolean isShowControlView = true;
 
     ViewGroup.LayoutParams containerLayoutParams;
 
@@ -55,12 +53,11 @@ public class VideoPlayerView extends RelativeLayout {
             if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                 int position = mediaPlayer.getCurrentPosition();
                 seekBarVideo.setProgress(position);
-                tvAlterationTime.setText(DateUtils.formatElapsedTime(position / 1000));
+                tvAlterationTime.setText(DateUtils.formatElapsedTime((long) Math.round(position / 1000D)));
             }
-            if (isShowControlView) {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                 touchTime++;
-                if (touchTime == 60) {
-                    isShowControlView = false;
+                if (touchTime == 60&&clTitleView.getVisibility() == View.VISIBLE) {
                     isShowVideoControl();
                 }
             }
@@ -69,7 +66,7 @@ public class VideoPlayerView extends RelativeLayout {
     };
     private CheckBox cbVideoPlay;
     private TextureView videoTextureView;
-    private LinearLayout llTitleView;
+    private ConstraintLayout clTitleView;
     private ImageView ivBack;
     private TextView tvTitle;
     private ConstraintLayout clControl;
@@ -77,11 +74,16 @@ public class VideoPlayerView extends RelativeLayout {
     private SeekBar seekBarVideo;
     private TextView tvFixationTime;
     private ImageView ivZoom;
+    private ImageView ivEdit;
+    private ImageView ivShare;
     private Context mContext;
     private ViewGroup parentView;
     private String mVideoPath;
     private boolean is_control;
     private boolean is_Title;
+    private boolean forbid_zoom;
+    private boolean show_edit;
+    private boolean show_share;
     private boolean control_follow_video;
 
     public VideoPlayerView(@NonNull Context context) {
@@ -98,12 +100,15 @@ public class VideoPlayerView extends RelativeLayout {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.VideoPlayerView);
         is_control = typedArray.getBoolean(R.styleable.VideoPlayerView_is_control, true);
         is_Title = typedArray.getBoolean(R.styleable.VideoPlayerView_is_Title, true);
+        forbid_zoom = typedArray.getBoolean(R.styleable.VideoPlayerView_forbid_zoom, false);
+        show_edit = typedArray.getBoolean(R.styleable.VideoPlayerView_show_edit, false);
+        show_share = typedArray.getBoolean(R.styleable.VideoPlayerView_show_share, true);
         control_follow_video = typedArray.getBoolean(R.styleable.VideoPlayerView_control_follow_video, false);
         typedArray.recycle();
 
         View.inflate(context, R.layout.view_video_player, this);
         videoTextureView = findViewById(R.id.video_textureView);
-        llTitleView = findViewById(R.id.ll_title_view);
+        clTitleView = findViewById(R.id.ll_title_view);
         ivBack = findViewById(R.id.iv_back);
         tvTitle = findViewById(R.id.tv_title);
         cbVideoPlay = findViewById(R.id.cb_video_play);
@@ -112,9 +117,14 @@ public class VideoPlayerView extends RelativeLayout {
         seekBarVideo = findViewById(R.id.seek_bar_video);
         tvFixationTime = findViewById(R.id.tv_fixation_time);
         ivZoom = findViewById(R.id.iv_zoom);
+        ivEdit = findViewById(R.id.iv_edit);
+        ivShare = findViewById(R.id.iv_share);
+        ivZoom.setVisibility(forbid_zoom ? View.INVISIBLE : View.VISIBLE);
+        ivEdit.setVisibility(show_edit ? View.VISIBLE : View.GONE);
 
+        ivShare.setVisibility(show_share?VISIBLE:INVISIBLE);
         clControl.setVisibility(is_control ? VISIBLE : INVISIBLE);
-        llTitleView.setVisibility(is_Title ? VISIBLE : INVISIBLE);
+        clTitleView.setVisibility(is_Title ? VISIBLE : INVISIBLE);
 
         videoTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
 
@@ -175,17 +185,12 @@ public class VideoPlayerView extends RelativeLayout {
                     } else {
                         mediaPlayer.seekTo(seekBar.getProgress());
                     }
-                    tvAlterationTime.setText(DateUtils.formatElapsedTime(seekBar.getProgress() / 1000));
+                    tvAlterationTime.setText(DateUtils.formatElapsedTime((long) Math.round(seekBar.getProgress() / 1000D)));
                 }
             }
         });
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isShowControlView = !isShowControlView;
-                isShowVideoControl();
-            }
-        });
+        setOnClickListener(this);
+
         cbVideoPlay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -217,6 +222,26 @@ public class VideoPlayerView extends RelativeLayout {
                 }
             }
         });
+        ivEdit.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onVideoPlayerViewListener!=null){
+                    onVideoPlayerViewListener.clickEdit();
+                }
+            }
+        });
+        ivShare.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onVideoPlayerViewListener!=null){
+                    onVideoPlayerViewListener.clickShare();
+                }
+            }
+        });
+    }
+
+    public void showShare(boolean isShow){
+        ivShare.setVisibility(isShow?VISIBLE:INVISIBLE);
     }
 
     public void isVideoPlay(boolean isPlay) {
@@ -233,14 +258,17 @@ public class VideoPlayerView extends RelativeLayout {
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    tvFixationTime.setText(DateUtils.formatElapsedTime(mediaPlayer.getDuration() / 1000));
+                    tvFixationTime.setText(DateUtils.formatElapsedTime((long) Math.round(mediaPlayer.getDuration() / 1000D)));
                     seekBarVideo.setMax(mediaPlayer.getDuration());
                     refreshTextureView();
+//                    if (forbid_zoom&&mediaPlayer.getVideoWidth()>mediaPlayer.getVideoHeight()){
+//                        enterFullScreen();
+//                    }
                     //设置渲染画板
                     mediaPlayer.setSurface(new Surface(surfaceTexture));
                     mHandler.post(runnableMedia);
                     mediaPlayer.start();
-                    if (onVideoPlayerViewListener!=null) {
+                    if (onVideoPlayerViewListener != null) {
                         onVideoPlayerViewListener.preloadCompleted();
                     }
                 }
@@ -249,6 +277,12 @@ public class VideoPlayerView extends RelativeLayout {
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
+                    cbVideoPlay.setChecked(false);
+                    seekBarVideo.setProgress(mediaPlayer.getDuration());
+                    clTitleView.setVisibility(View.VISIBLE);
+                    clControl.setVisibility(is_control ? View.VISIBLE : View.INVISIBLE);
+                    clTitleView.setVisibility(is_control ? View.VISIBLE : View.INVISIBLE);
+                    touchTime = 0;
                 }
             });
             mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -260,7 +294,7 @@ public class VideoPlayerView extends RelativeLayout {
                     return false;
                 }
             });
-            mediaPlayer.setLooping(true);
+            mediaPlayer.setLooping(false);
             mediaPlayer.prepareAsync();
 
             tvTitle.setText(videoPath.substring(videoPath.lastIndexOf("/") + 1));
@@ -308,6 +342,7 @@ public class VideoPlayerView extends RelativeLayout {
      * 退出全屏
      */
     private boolean exitFullScreen() {
+        if (forbid_zoom) return false;
         if (mPlayerState == PLAYER_FULL_SCREEN) {
             NiceUtil.showActionBar(mContext);
             NiceUtil.scanForActivity(mContext).setRequestedOrientation(
@@ -353,14 +388,12 @@ public class VideoPlayerView extends RelativeLayout {
     }
 
     private void isShowVideoControl() {
-        if (isShowControlView) {
-            cbVideoPlay.setVisibility(View.VISIBLE);
-            clControl.setVisibility(is_control? View.VISIBLE: View.INVISIBLE);
-            llTitleView.setVisibility(is_control? View.VISIBLE: View.INVISIBLE);
+        if (clTitleView.getVisibility() == View.INVISIBLE) {
+            clControl.setVisibility(is_control ? View.VISIBLE : View.INVISIBLE);
+            clTitleView.setVisibility(is_control ? View.VISIBLE : View.INVISIBLE);
         } else {
-            cbVideoPlay.setVisibility(View.INVISIBLE);
             clControl.setVisibility(View.INVISIBLE);
-            llTitleView.setVisibility(View.INVISIBLE);
+            clTitleView.setVisibility(View.INVISIBLE);
         }
         touchTime = 0;
     }
@@ -398,8 +431,32 @@ public class VideoPlayerView extends RelativeLayout {
         this.onVideoPlayerViewListener = onVideoPlayerViewListener;
     }
 
+    private int clickNum = 0;
     private OnVideoPlayerViewListener onVideoPlayerViewListener;
-    public interface OnVideoPlayerViewListener{
+
+    private Handler handler = new Handler();
+    @Override
+    public void onClick(View v) {
+        clickNum++;
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (clickNum == 1) {
+                    isShowVideoControl();
+                }else if(clickNum==2){
+                    isShowVideoControl();
+                    cbVideoPlay.setChecked(!cbVideoPlay.isChecked());
+                }
+                //防止handler引起的内存泄漏
+                handler.removeCallbacksAndMessages(null);
+                clickNum = 0;
+            }
+        },300);
+    }
+
+    public interface OnVideoPlayerViewListener {
         void preloadCompleted();
+        void clickEdit();
+        void clickShare();
     }
 }

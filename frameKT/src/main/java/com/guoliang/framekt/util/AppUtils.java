@@ -214,7 +214,7 @@ public class AppUtils {
      * 需要动态权限: android.permission.READ_PHONE_STATE
      */
     @SuppressLint("HardwareIds")
-    public static String getIMEI(@NotNull Context context) {
+    public static String getAndroidID(@NotNull Context context) {
         return Settings.Secure.getString(context.getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 }

@@ -8,6 +8,6 @@
     <string name="parse_error">解析错误</string>
     <string name="please_check_the_network_status">请检查网络状态</string>
     <string name="protocol_error">协议出错</string>
-    <string name="certificate_error">证书出错</string>
+    <string name="certificate_error">当前网络不可用</string>
     <string name="connection_timeout">连接超时</string>
 </resources>

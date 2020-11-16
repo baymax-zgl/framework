@@ -11,7 +11,7 @@
         <layer-list>
             <item>
                 <shape android:shape="oval">
-                    <solid android:color="#006DFF" />
+                    <solid android:color="#FFFFFF" />
                     <size android:width="13dp" android:height="13dp"/>
                 </shape>
             </item>

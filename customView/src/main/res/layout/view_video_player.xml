@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ll_title_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +22,8 @@
         android:layout_alignParentLeft="true"
         android:background="#4D000000"
         android:layout_alignParentTop="true"
-        android:paddingTop="15dp"
+        android:fitsSystemWindows="true"
+        android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:orientation="horizontal">
 
@@ -30,6 +31,9 @@
             android:id="@+id/iv_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:padding="10dp"
             android:src="@mipmap/icon_fanhui" />
 
@@ -43,18 +47,21 @@
             android:layout_marginStart="10dp"
             android:textColor="#ffffff"
             android:textSize="20sp"
-            android:layout_marginLeft="10dp" />
-    </LinearLayout>
+            android:layout_marginLeft="10dp"
+            app:layout_constraintStart_toEndOf="@id/iv_back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+        <ImageView
+            android:id="@+id/iv_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:src="@mipmap/ico_player_share"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-    <CheckBox
-        android:id="@+id/cb_video_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:background="@drawable/video_play_check"
-        android:button="@null"
-        android:checked="true" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_control"
@@ -69,19 +76,35 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp">
 
+        <CheckBox
+            android:id="@+id/cb_video_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:background="@drawable/video_play_check"
+            android:button="@null"
+            android:padding="5dp"
+            android:checked="true"
+            android:layout_marginStart="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_alteration_time"
+            android:layout_marginLeft="10dp" />
+
         <TextView
             android:id="@+id/tv_alteration_time"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp"
             android:gravity="center"
             android:text="00:00"
-            android:textColor="#CCCCCC"
+            android:layout_marginStart="10dp"
+            android:textColor="#FFFFFF"
             android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@id/cb_video_play"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="10dp" />
 
         <SeekBar
             android:id="@+id/seek_bar_video"
@@ -106,7 +129,7 @@
             android:layout_marginRight="10dp"
             android:gravity="center"
             android:text="00:00"
-            android:textColor="#CCCCCC"
+            android:textColor="#FFFFFF"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/iv_zoom"
@@ -119,6 +142,17 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="center"
             android:src="@mipmap/icon_fangda"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/iv_edit"
+            android:layout_width="35dp"
+            android:layout_height="0dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:scaleType="center"
+            android:visibility="gone"
+            android:src="@mipmap/ico_player_edit"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
